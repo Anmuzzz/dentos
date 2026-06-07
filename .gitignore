@@ -1,0 +1,4 @@
+node_modules/
+dentos.db
+.DS_Store
+*.log
