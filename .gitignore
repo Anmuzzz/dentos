@@ -1,4 +1,6 @@
 node_modules/
 dentos.db
-.DS_Store
+dentos.db-shm
+dentos.db-wal
 *.log
+.DS_Store
