@@ -1283,9 +1283,16 @@
     const timeSelect = document.getElementById('time');
     const timeHint = document.getElementById('timeHint');
 
-    setMinDate();
+    // localStorage fallback для GitHub Pages (без бэкенда)
+    function getLocalAppts() {
+      try { return JSON.parse(localStorage.getItem('dentos_appts') || '[]'); }
+      catch { return []; }
+    }
+    function saveLocalAppts(appts) {
+      localStorage.setItem('dentos_appts', JSON.stringify(appts));
+    }
 
-    // при смене даты — загружаем свободные слоты
+    setMinDate();
     dateInput.addEventListener('change', loadSlots);
 
     async function loadSlots() {
@@ -1293,26 +1300,36 @@
       if (!date) return;
       timeSelect.innerHTML = '<option value="">Загрузка...</option>';
       timeSelect.disabled = true;
+
+      let slots = [];
       try {
-        const res = await fetch('/api/slots?date=' + date);
-        const slots = await res.json();
-        if (!Array.isArray(slots) || slots.length === 0) {
-          timeSelect.innerHTML = '<option value="">Нет свободных слотов</option>';
-          return;
+        const res = await fetch('/api/slots?date=' + encodeURIComponent(date));
+        if (res.ok) slots = await res.json();
+      } catch {}
+
+      // Если бэкенд недоступен — считаем слоты из localStorage
+      if (!Array.isArray(slots) || slots.length === 0) {
+        const taken = getLocalAppts().filter(a => a.date === date).map(a => a.time);
+        slots = [];
+        for (let h = 10; h <= 20; h++) {
+          const t = String(h).padStart(2, '0') + ':00';
+          if (!taken.includes(t)) slots.push(t);
         }
-        timeSelect.innerHTML = '<option value="">Выберите время</option>' +
-          slots.map(t => '<option value="' + t + '">' + t + '</option>').join('');
-        timeSelect.disabled = false;
-      } catch {
-        timeSelect.innerHTML = '<option value="">Ошибка загрузки</option>';
       }
+
+      if (slots.length === 0) {
+        timeSelect.innerHTML = '<option value="">Нет свободных слотов</option>';
+        return;
+      }
+      timeSelect.innerHTML = '<option value="">Выберите время</option>' +
+        slots.map(t => '<option value="' + t + '">' + t + '</option>').join('');
+      timeSelect.disabled = false;
     }
 
     function setMinDate() {
       const tzOffset = 3;
       const now = new Date();
       const local = new Date(now.getTime() + tzOffset * 3600000);
-      // +1 день (нельзя записаться на сегодня — нужен хотя бы 1 час)
       local.setDate(local.getDate() + 1);
       dateInput.min = local.toISOString().split('T')[0];
       dateInput.value = local.toISOString().split('T')[0];
@@ -1325,6 +1342,7 @@
       statusEl.style.display = 'block';
 
       const data = {
+        id: Date.now(),
         name: document.getElementById('name').value.trim(),
         phone: document.getElementById('phone').value.trim(),
         service: document.getElementById('service').value,
@@ -1344,6 +1362,8 @@
         return;
       }
 
+      // Пробуем отправить на бэкенд
+      let ok = false;
       try {
         const res = await fetch('/api/appointments', {
           method: 'POST',
@@ -1351,17 +1371,34 @@
           body: JSON.stringify(data),
         });
         const result = await res.json();
-
         if (res.ok) {
-          statusEl.className = 'form-status success';
-          statusEl.textContent = '✅ Запись подтверждена на ' + data.date + ' в ' + data.time + '!';
-          form.reset();
-          dateInput.value = new Date(new Date().getTime() + 3 * 3600000 + 86400000).toISOString().split('T')[0];
-          loadSlots();
+          ok = true;
         } else {
           statusEl.className = 'form-status error';
           statusEl.textContent = '❌ ' + (result.error || 'Ошибка при записи');
+          return;
         }
+      } catch {
+        // Бэкенд недоступен — сохраняем в localStorage
+        const appts = getLocalAppts();
+        const conflict = appts.find(a => a.date === data.date && a.time === data.time);
+        if (conflict) {
+          statusEl.className = 'form-status error';
+          statusEl.textContent = '❌ Это время уже занято. Выберите другое.';
+          return;
+        }
+        appts.push(data);
+        saveLocalAppts(appts);
+        ok = true;
+      }
+
+      if (ok) {
+        statusEl.className = 'form-status success';
+        statusEl.textContent = '✅ Запись подтверждена на ' + data.date + ' в ' + data.time + '!';
+        form.reset();
+        setMinDate();
+      }
+    });
       } catch {
         statusEl.className = 'form-status error';
         statusEl.textContent = '❌ Сервер недоступен. Запустите бэкенд: node server.js';
