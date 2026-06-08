@@ -9,26 +9,28 @@ const PORT = process.env.PORT || 3000;
 // НАСТРОЙКИ (через переменные окружения или .env)
 // ═══════════════════════════════════════════════════
 const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN || '';     // токен бота от @BotFather
-const TG_CHAT_ID  = process.env.TG_CHAT_ID  || '';       // ID чата админа
+const TG_CHAT_IDS = (process.env.TG_CHAT_ID || '').split(',').map(s => s.trim()).filter(Boolean);
 const ADMIN_USER  = process.env.ADMIN_USER  || 'admin';   // логин для /admin
 const ADMIN_PASS  = process.env.ADMIN_PASS  || 'dentos';  // пароль для /admin
 
 // ===================== Telegram =====================
 async function sendTelegram(msg) {
-  if (!TG_BOT_TOKEN || !TG_CHAT_ID) return;
-  try {
-    const url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
-    await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: TG_CHAT_ID,
-        text: msg,
-        parse_mode: 'HTML',
-      }),
-    });
-  } catch (err) {
-    console.error('Telegram notify error:', err.message);
+  if (!TG_BOT_TOKEN || TG_CHAT_IDS.length === 0) return;
+  for (const chatId of TG_CHAT_IDS) {
+    try {
+      const url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
+      await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: Number(chatId),
+          text: msg,
+          parse_mode: 'HTML',
+        }),
+      });
+    } catch (err) {
+      console.error('Telegram notify error:', err.message);
+    }
   }
 }
 
@@ -45,6 +47,18 @@ function basicAuth(req, res, next) {
   res.set('WWW-Authenticate', 'Basic realm="DentOs Admin"');
   res.status(401).send('Неверный логин или пароль');
 }
+
+// ===================== CORS =====================
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (origin.endsWith('.github.io') || origin === 'https://anmuzzz.github.io' || origin.startsWith('http://localhost'))) {
+    res.set('Access-Control-Allow-Origin', origin);
+    res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
