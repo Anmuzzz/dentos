@@ -5,6 +5,47 @@ const Database = require('better-sqlite3');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ═══════════════════════════════════════════════════
+// НАСТРОЙКИ (через переменные окружения или .env)
+// ═══════════════════════════════════════════════════
+const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN || '';     // токен бота от @BotFather
+const TG_CHAT_ID  = process.env.TG_CHAT_ID  || '';       // ID чата админа
+const ADMIN_USER  = process.env.ADMIN_USER  || 'admin';   // логин для /admin
+const ADMIN_PASS  = process.env.ADMIN_PASS  || 'dentos';  // пароль для /admin
+
+// ===================== Telegram =====================
+async function sendTelegram(msg) {
+  if (!TG_BOT_TOKEN || !TG_CHAT_ID) return;
+  try {
+    const url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TG_CHAT_ID,
+        text: msg,
+        parse_mode: 'HTML',
+      }),
+    });
+  } catch (err) {
+    console.error('Telegram notify error:', err.message);
+  }
+}
+
+// ===================== Basic Auth =====================
+function basicAuth(req, res, next) {
+  const header = req.headers.authorization || '';
+  if (!header.startsWith('Basic ')) {
+    res.set('WWW-Authenticate', 'Basic realm="DentOs Admin"');
+    return res.status(401).send('Требуется авторизация');
+  }
+  const b64 = header.slice(6);
+  const [user, pass] = Buffer.from(b64, 'base64').toString().split(':');
+  if (user === ADMIN_USER && pass === ADMIN_PASS) return next();
+  res.set('WWW-Authenticate', 'Basic realm="DentOs Admin"');
+  res.status(401).send('Неверный логин или пароль');
+}
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
@@ -73,7 +114,9 @@ app.get('/api/slots', (req, res) => {
 
 // создать запись
 app.post('/api/appointments', (req, res) => {
-  const { name, phone, service, date, time, comment } = req.body;
+  const { name, phone, date, time } = req.body;
+  const service = req.body.service || '';
+  const comment = req.body.comment || '';
 
   if (!name || !phone || !date || !time) {
     return res.status(400).json({ error: 'name, phone, date, time обязательны' });
@@ -107,9 +150,23 @@ app.post('/api/appointments', (req, res) => {
 
   try {
     const info = stmtInsert.run({ name, phone, service, date, time, comment });
+
+    // уведомление в Telegram
+    const serviceText = service ? `• Услуга: ${service}\n` : '';
+    sendTelegram(
+      `<b>Новая запись! 🦷</b>\n` +
+      `• Имя: ${name}\n` +
+      `• Телефон: ${phone}\n` +
+      `• Дата: ${date}\n` +
+      `• Время: ${time}\n` +
+      serviceText +
+      (comment ? `• Комментарий: ${comment}` : '')
+    );
+
     res.status(201).json({ id: info.lastInsertRowid, message: 'Запись создана' });
   } catch (err) {
-    res.status(500).json({ error: 'Ошибка сервера' });
+    console.error('Appointment insert error:', err.message);
+    res.status(500).json({ error: 'Ошибка сервера: ' + err.message });
   }
 });
 
@@ -123,14 +180,14 @@ app.delete('/api/appointments/:id', (req, res) => {
 });
 
 // ===================== Admin panel =====================
-app.get('/admin', (req, res) => {
+app.get('/admin', basicAuth, (req, res) => {
   res.send(`
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Админ — Dentos</title>
+<title>Админ — ДентОс</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -235,6 +292,6 @@ app.get('/admin', (req, res) => {
 
 // ===================== Start =====================
 app.listen(PORT, () => {
-  console.log(`Dentos backend: http://localhost:${PORT}`);
+  console.log(`ДентОс backend: http://localhost:${PORT}`);
   console.log(`Admin panel:    http://localhost:${PORT}/admin`);
 });

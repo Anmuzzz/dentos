@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dentos — Стоматология в Краснодаре</title>
-  <meta name="description" content="Современная стоматология Dentos в Краснодаре. Лечение зубов, имплантация, отбеливание, профессиональная гигиена. Запишитесь на приём." />
+  <title>ДентОс — Стоматология в Краснодаре</title>
+  <meta name="description" content="Современная стоматология ДентОс в Краснодаре. Лечение зубов, имплантация, отбеливание, профессиональная гигиена. Запишитесь на приём." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -132,7 +132,7 @@
     .btn-primary:hover {
       background: var(--accent-dark);
       transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(13,122,110,0.3);
+      box-shadow: 0 8px 24px rgba(37,99,235,0.3);
     }
     .btn-outline {
       background: transparent;
@@ -151,7 +151,20 @@
 
     @media (max-width: 768px) {
       .section-padding {
-        padding: 64px 0;
+        padding: 48px 0;
+      }
+      .btn {
+        padding: 12px 24px;
+        font-size: 14px;
+      }
+      .container {
+        padding: 0 16px;
+      }
+      .hero-content h1 {
+        font-size: 32px;
+      }
+      .hero-content p {
+        font-size: 16px;
       }
     }
 
@@ -180,9 +193,6 @@
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-    .nav-logo span {
-      color: var(--accent);
     }
     .nav-links {
       display: flex;
@@ -309,47 +319,32 @@
     @media (max-width: 768px) {
       .hero {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 20px;
         padding-top: 68px;
+        min-height: auto;
       }
       .hero-content {
-        padding: 32px 0 0;
+        padding: 24px 0 0;
+      }
+      .hero-content h1 {
+        font-size: 32px;
+      }
+      .hero-content p {
+        font-size: 16px;
       }
       .hero-visual {
         order: -1;
       }
       .hero-visual-inner {
         aspect-ratio: 16/9;
+        border-radius: var(--radius-md);
       }
-    }
-
-    /* ===================== TRUSTED BAR ===================== */
-    .trusted {
-      padding: 48px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .trusted p {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      margin-bottom: 24px;
-      text-align: center;
-    }
-    .trusted-logos {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 48px;
-      flex-wrap: wrap;
-    }
-    .trusted-logos span {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      opacity: 0.8;
+      .hero-badge {
+        bottom: 16px;
+        left: 16px;
+        padding: 8px 14px;
+        font-size: 12px;
+      }
     }
 
     /* ===================== ABOUT ===================== */
@@ -385,6 +380,16 @@
       .about-grid {
         grid-template-columns: 1fr;
         gap: 32px;
+      }
+      .about-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .about-stat {
+        padding: 16px;
+      }
+      .about-stat h3 {
+        font-size: 24px;
       }
     }
 
@@ -514,7 +519,7 @@
     .form-group select:focus,
     .form-group textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(13,122,110,0.1);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
     .form-group textarea {
       resize: vertical;
@@ -544,11 +549,15 @@
     }
     @media (max-width: 768px) {
       .appointment {
-        padding: 32px 24px;
+        padding: 24px 16px;
+        border-radius: var(--radius-md);
       }
       .appointment-grid {
         grid-template-columns: 1fr;
-        gap: 32px;
+        gap: 24px;
+      }
+      .appointment-info h3 {
+        font-size: 20px;
       }
       .form-row {
         grid-template-columns: 1fr;
@@ -651,6 +660,16 @@
       .payment-grid {
         grid-template-columns: 1fr;
       }
+      .payment-methods {
+        gap: 12px;
+        padding: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .payment-card.popular::before {
+        font-size: 10px;
+        padding: 3px 12px;
+      }
     }
     @media (min-width: 769px) and (max-width: 1024px) {
       .payment-grid {
@@ -693,7 +712,15 @@
     @media (max-width: 768px) {
       .team-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 32px;
+        gap: 24px;
+      }
+      .team-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 28px;
+      }
+      .team-card h4 {
+        font-size: 14px;
       }
     }
 
@@ -757,10 +784,26 @@
       min-height: 400px;
       display: block;
     }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
     @media (max-width: 768px) {
       .contact-wrap,
       .reviews-grid {
         grid-template-columns: 1fr;
+      }
+      .contact-card {
+        padding: 24px;
+      }
+      .map-wrap {
+        min-height: 300px;
+      }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .reviews-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
@@ -783,6 +826,25 @@
     }
     footer .footer-logo span {
       color: var(--accent);
+    }
+
+    @media (max-width: 480px) {
+      .team-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .payment-card {
+        padding: 24px;
+      }
+      .payment-card .price {
+        font-size: 28px;
+      }
+      .services-header {
+        margin-bottom: 32px;
+      }
+      .section-desc {
+        font-size: 15px;
+      }
     }
 
     /* ===================== ANIMATIONS ===================== */
@@ -818,7 +880,7 @@
   <!-- ===================== NAV ===================== -->
   <nav role="navigation" aria-label="Главное меню">
     <div class="container">
-      <a href="#" class="nav-logo"><span style="color:var(--accent);">D</span>entos</a>
+      <a href="#" class="nav-logo">ДентОс</a>
       <button class="nav-toggle" aria-label="Открыть меню" onclick="toggleNav()">☰</button>
       <ul class="nav-links" id="navLinks">
         <li><a href="#about">О нас</a></li>
@@ -855,19 +917,6 @@
     </div>
   </section>
 
-  <!-- ===================== TRUSTED ===================== -->
-  <section class="trusted">
-    <div class="container">
-      <p>Нам доверяют</p>
-      <div class="trusted-logos">
-        <span>СБЕР ЗДОРОВЬЕ</span>
-        <span>АЛЬФАСТРАХОВАНИЕ</span>
-        <span>ИНГОССТРАХ</span>
-        <span>СОГАЗ</span>
-        <span>РЕСО-ГАРАНТИЯ</span>
-      </div>
-    </div>
-  </section>
 
   <!-- ===================== ABOUT ===================== -->
   <section id="about" class="section-padding">
@@ -875,7 +924,7 @@
       <div class="reveal">
         <div class="section-label">О клинике</div>
         <h2 class="section-title">Стоматология, где <br/>важен каждый пациент</h2>
-        <p class="section-desc">Dentos — это современная стоматологическая клиника в Краснодаре, объединяющая европейские стандарты лечения и индивидуальный подход. Мы используем передовое оборудование и материалы премиум-класса.</p>
+        <p class="section-desc">ДентОс — это современная стоматологическая клиника в Краснодаре, объединяющая европейские стандарты лечения и индивидуальный подход. Мы используем передовое оборудование и материалы премиум-класса.</p>
         <div class="about-stats">
           <div class="about-stat">
             <h3>10+</h3>
@@ -897,7 +946,7 @@
       </div>
       <div class="reveal" style="background:var(--accent-light);border-radius:var(--radius-lg);min-height:400px;display:flex;align-items:center;justify-content:center;padding:48px;text-align:center;">
         <div>
-          <p style="font-size:48px;font-weight:800;color:var(--accent);letter-spacing:-0.04em;">Dentos</p>
+          <p style="font-size:48px;font-weight:800;color:var(--accent);letter-spacing:-0.04em;">ДентОс</p>
           <p style="color:var(--accent);opacity:0.7;font-size:15px;">Краснодар, ул. Лётчика Позднякова, 2/1</p>
         </div>
       </div>
@@ -984,9 +1033,9 @@
           <p>Стоматолог, стаж 14 лет</p>
         </div>
         <div class="team-card reveal">
-          <div class="team-avatar">ИП</div>
-          <h4>Ирина Павловна</h4>
-          <p>Детский стоматолог</p>
+          <div class="team-avatar">ТА</div>
+          <h4>Тавадян Ален Александрович</h4>
+          <p>Хирург</p>
         </div>
       </div>
     </div>
@@ -1000,7 +1049,7 @@
         <h2 class="section-title">Нам доверяют пациенты</h2>
         <p class="section-desc" style="margin:0 auto;">Рейтинг 5.0 на Яндекс.Картах на основе 72 оценок и 49 отзывов</p>
       </div>
-      <div class="reviews-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+      <div class="reviews-grid">
         <div class="reveal" style="background:var(--surface);border-radius:var(--radius-md);padding:32px;border:1px solid var(--border);">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
             <div style="width:44px;height:44px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-size:16px;">ЛЧ</div>
@@ -1053,16 +1102,19 @@
         <p class="section-desc" style="margin:0 auto;">Фиксированные цены без скрытых платежей. Оплата наличными, картой или в рассрочку.</p>
       </div>
       <div class="payment-grid">
-        <div class="payment-card reveal">
+        <div class="payment-card reveal" style="order:-1;">
           <h3>Консультация</h3>
-          <div class="price">1 500 ₽ <small>/ приём</small></div>
+          <div class="price" style="color:var(--text-primary);">Бесплатно <small>кроме ортодонта</small></div>
           <ul>
             <li>Осмотр и диагностика</li>
             <li>Составление плана лечения</li>
             <li>Снимок панорамный</li>
             <li>Рекомендации по уходу</li>
           </ul>
-          <a href="#appointment" class="btn btn-outline">Записаться</a>
+          <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:16px;border-top:1px solid var(--border);padding-top:12px;">
+            💡 Консультация ортодонта — 700 ₽
+          </p>
+          <a href="#appointment" class="btn btn-primary">Записаться</a>
         </div>
         <div class="payment-card popular reveal">
           <h3>Лечение зуба</h3>
@@ -1241,7 +1293,7 @@
   <!-- ===================== FOOTER ===================== -->
   <footer>
     <div class="container">
-      <div class="footer-logo"><span style="color:var(--accent);">D</span>entos</div>
+      <div class="footer-logo">ДентОс</div>
       <p>Стоматология в Краснодаре. Все права защищены © 2026</p>
       <p style="margin-top:8px;font-size:12px;">
         Адрес: <span id="footerAddress2">г. Краснодар, ул. Лётчика Позднякова, 2, корп. 1</span> ·
@@ -1397,11 +1449,6 @@
         statusEl.textContent = '✅ Запись подтверждена на ' + data.date + ' в ' + data.time + '!';
         form.reset();
         setMinDate();
-      }
-    });
-      } catch {
-        statusEl.className = 'form-status error';
-        statusEl.textContent = '❌ Сервер недоступен. Запустите бэкенд: node server.js';
       }
     });
 
